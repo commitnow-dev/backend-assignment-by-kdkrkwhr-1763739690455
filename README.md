@@ -1,186 +1,19 @@
 
-# TODO 관리 API 개발
+# 🌱 TODO 관리 API 개발
 
-## ✏️ 과제의 개요
+> 안녕하세요. 커밋나우의 과제를 진행하려는 여러분을 모두 환영합니다!
+> 본 과제를 해결하고 더 성장한 자신을 마주하는 기회가 되길 바랍니다! 🙌
 
-| 카테고리 | 난이도 | 제한시간 |
-|----------|--------|----------|
-| backend | normal | 7d |
+# 📜 과제의 내용
 
-### 💻 과제에서 요구하는 개발언어
+과제의 내용은 아래 링크를 통해 커밋나우 홈페이지에서 확인할 수 있습니다.
 
-- sql
-- java
+> [과제내용 보러가기](https://sandbox.commitnow.dev/assignment/TODO-관리-API-개발-S583lpZC)
 
+과제의 설명과 요구사항을 잘 참고하여, 구현해 주세요.
 
-## 📜 과제의 내용
+# 💡 가이드
 
-> 과제 설명과 요구사항을 참고하여, 구현해 주세요.
+어떻게 해야할지 모르겠다면, 아래 문서를 참고해 주세요!
 
-### 👀 과제의 설명
-
-# 과제 가이드
-
-## 개요
-
-개인별 할 일 목록을 관리할 수 있는 RESTful API를 구현합니다.
-
-주요 범위는 회원가입/로그인 → 카테고리 관리 → TODO 생성/수정/삭제 → 상태 변경(TODO/IN\_PROGRESS/DONE) → 조회 및 필터링 전 과정이며, RESTful API 설계·인증/인가·예외 처리·트랜잭션 관리를 중점 평가합니다.
-
-​
-
-### 사용자 시나리오
-
-#### 시나리오 1: 회원가입 및 로그인
-
-1. 사용자가 회원가입을 진행합니다 (이메일, 비밀번호, 닉네임 입력)
-2. 회원가입 완료 후 로그인을 시도합니다
-3. 로그인 성공 시 JWT 토큰을 받습니다
-4. 이후 모든 API 요청 시 받은 토큰을 Authorization 헤더에 포함하여 요청합니다
-
-#### 시나리오 2: 카테고리 생성 및 TODO 관리
-
-1. 사용자가 "업무", "개인", "학습" 등의 카테고리를 생성합니다
-2. 각 카테고리에는 색상을 지정할 수 있습니다 (선택사항)
-3. TODO를 생성할 때 카테고리를 지정할 수 있습니다 (선택사항)
-4. TODO는 제목, 내용, 마감일을 설정할 수 있습니다
-
-#### 시나리오 3: TODO 상태 관리
-
-1. 사용자가 생성한 TODO는 기본적으로 "TODO" 상태입니다
-2. 작업을 시작하면 상태를 "IN\_PROGRESS"로 변경합니다
-3. 작업이 완료되면 "DONE" 상태로 변경하고 완료 시간이 기록됩니다
-4. TODO 목록을 조회할 때 상태별로 필터링할 수 있습니다
-
-#### 시나리오 4: TODO 조회 및 검색
-
-1. 사용자는 자신의 TODO 목록을 조회할 수 있습니다
-2. 상태, 카테고리 별로 필터링할 수 있습니다
-3. 상태, 마감일, 카테고리등으로 정렬할 수 있습니다
-
-#### 시나리오 5: 권한 관리
-
-1. 사용자는 자신이 생성한 TODO만 조회/수정/삭제할 수 있습니다
-2. 다른 사용자의 TODO에 접근하려고 하면 권한 오류가 발생합니다
-3. 카테고리도 마찬가지로 소유자만 수정/삭제할 수 있습니다
-
-## 필요한 API 목록
-
-#### 인증
-
-* **POST** `/api/auth/signup` : 회원가입 (이메일 중복 체크, 비밀번호 암호화)
-* **POST** `/api/auth/login` : 로그인 (JWT 토큰 발급)
-* **GET** `/api/users/me` : 현재 사용자 정보 조회 (인증 필요)
-
-#### 카테고리
-
-* **POST** `/api/categories` : 카테고리 생성 (인증 필요)
-* **GET** `/api/categories` : 카테고리 목록 조회 (인증 필요, 사용자별)
-* **PUT** `/api/categories/:categoryId` : 카테고리 수정 (인증 필요, 소유자만)
-* **DELETE** `/api/categories/:categoryId` : 카테고리 삭제 (인증 필요, 소유자만)
-
-#### TODO
-
-* **POST** `/api/todos` : TODO 생성 (인증 필요, 제목 필수)
-* **GET** `/api/todos` : TODO 목록 조회 (인증 필요, 페이징 필수)
-* **GET** `/api/todos/:todoId` : TODO 상세 조회 (인증 필요, 작성자만)
-* **PUT** `/api/todos/:todoId` : TODO 수정 (인증 필요, 작성자만)
-* **DELETE** `/api/todos/:todoId` : TODO 삭제 (인증 필요, 작성자만)
-* **PATCH** `/api/todos/:todoId/complete` : TODO 완료 처리 (인증 필요, 상태 DONE, completedAt 자동 설정)
-
-#### 선택 기능
-
-* **GET** `/api/todos/search` : TODO 검색 (제목/내용, 인증 필요)
-* **GET** `/api/todos/statistics` : TODO 통계 조회 (인증 필요, 상태/우선순위/카테고리별 분포, 완료율)
-* **GET** `/api/todos/upcoming?days=` : 마감일 임박 TODO 조회 (인증 필요, 기본값 7일)
-
-***
-
-### ERD (Entity Relationship Diagram)
-
-```
-User (사용자)
-├── id (PK)
-├── email (UNIQUE, NOT NULL)
-├── password (NOT NULL)
-├── nickname (NOT NULL)
-├── created_at
-└── updated_at
-
-Category (카테고리)
-├── id (PK)
-├── user_id (FK -> User.id)
-├── name (NOT NULL)
-├── color (색상 코드, 선택사항)
-├── created_at
-└── updated_at
-
-Todo (할 일)
-├── id (PK)
-├── user_id (FK -> User.id)
-├── category_id (FK -> Category.id, NULL 가능)
-├── title (NOT NULL)
-├── content
-├── priority (ENUM: LOW, MEDIUM, HIGH)
-├── status (ENUM: TODO, IN_PROGRESS, DONE)
-├── due_date (마감일, NULL 가능)
-├── completed_at (완료 일시, NULL 가능)
-├── created_at
-└── updated_at
-```
-
-### 엔티티 상세 설계
-
-#### User 엔티티
-
-```java
-- id: Long (PK, 자동 증가)
-- email: String (UNIQUE, NOT NULL, 이메일 형식 검증)
-- password: String (NOT NULL, 암호화 저장)
-- nickname: String (NOT NULL, 2-20자)
-- createdAt: LocalDateTime
-- updatedAt: LocalDateTime
-```
-
-#### Category 엔티티
-
-```java
-- id: Long (PK, 자동 증가)
-- user: User (ManyToOne, 사용자별 카테고리)
-- name: String (NOT NULL, 1-50자)
-- color: String (색상 코드, 예: #FF5733, 선택사항)
-- createdAt: LocalDateTime
-- updatedAt: LocalDateTime
-```
-
-#### Todo 엔티티
-
-```java
-- id: Long (PK, 자동 증가)
-- user: User (ManyToOne, 작성자)
-- category: Category (ManyToOne, NULL 가능)
-- title: String (NOT NULL, 1-100자)
-- content: String (최대 1000자)
-- priority: Priority (ENUM: LOW, MEDIUM, HIGH, 기본값: MEDIUM)
-- status: TodoStatus (ENUM: TODO, IN_PROGRESS, DONE, 기본값: TODO)
-- dueDate: LocalDateTime (NULL 가능)
-- completedAt: LocalDateTime (NULL 가능, 완료 시 자동 설정)
-- createdAt: LocalDateTime
-- updatedAt: LocalDateTime
-```
-
-​
-
-
-### 🎯 과제의 요구사항
-
-- RESTful API 설계 원칙 준수 (리소스 중심 URL, 적절한 HTTP 메서드 사용)
-- 적절한 HTTP 상태 코드 사용 (200, 201, 400, 401, 403, 404, 409, 500 등)
-- TODO와 카테고리는 소유자만 접근 가능하도록 권한 검증
-- Global Exception Handler 구현
-- Bean Validation 사용 (`@Valid`, `@NotNull`, `@Size`, `@Email` 등)
-- JPA를 활용한 엔티티 설계 및 적절한 연관관계 매핑 (ManyToOne, OneToMany)
-- 비밀번호는 반드시 암호화 저장 (BCrypt 권장)
-- DTO 사용 (Entity 직접 반환 지양)
-- 클래스 계층별 책임 분리
-- `@Transactional` 어노테이션 이용한 트렌잭션 처리 (트렌잭션 격리수준 이해)
+> [가이드](./ASSIGNMENT_GUIDE.md)
